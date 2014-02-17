@@ -72,7 +72,7 @@ function init() {
     $.ajax({
         async: false,
         dataType: "json",
-        url: "/data/map.json",
+        url: "data/map.json",
         success: function (data) {
             map = data.map;
             map_size = data.size;
