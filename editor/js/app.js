@@ -142,7 +142,7 @@ function initSettingDialog() {
 }
 
 $(function () {
-    resources.load("/data/spritesheet.json");
+    resources.load("../data/spritesheet.json");
     resources.onReady(init);
 });
 
