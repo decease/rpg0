@@ -28,7 +28,6 @@ var canvas = null,
         oldPos: [0, 0]
     };
 
-
 function main() {
     var now = Date.now();
     var dt = (now - lastTime) / 1000.0;
@@ -142,7 +141,7 @@ function initSettingDialog() {
 }
 
 $(function () {
-    resources.load("/data/spritesheet.json");
+    resources.load("../data/spritesheet.json");
     resources.onReady(init);
 });
 

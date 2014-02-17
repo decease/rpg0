@@ -322,17 +322,61 @@
                 "animated": false
             }
         },
+<<<<<<< HEAD
         "sprites/fires.png": {
+=======
+        "/sprites/fight.png": {
+>>>>>>> origin/master
             "30": {
                 "frame": {
-                    "x": 10,
+                    "x": 0,
                     "y": 0,
                     "width": 40,
                     "height": 40
                 },
                 "rotated": false,
                 "animated": true,
-                "frames": [0, 1, 2, 3, 4, 5, 6]
+                "frames": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+            },
+            "31": {
+                "frame": {
+                    "x": 0,
+                    "y": 40,
+                    "width": 15,
+                    "height": 10
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "32": {
+                "frame": {
+                    "x": 0,
+                    "y": 50,
+                    "width": 15,
+                    "height": 10
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "33": {
+                "frame": {
+                    "x": 15,
+                    "y": 40,
+                    "width": 10,
+                    "height": 10
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "34": {
+                "frame": {
+                    "x": 25,
+                    "y": 40,
+                    "width": 10,
+                    "height": 10
+                },
+                "rotated": false,
+                "animated": false
             }
         }
     }
