@@ -7,8 +7,8 @@
             "frame": {
                 "x": 0,
                 "y": 0,
-                "w": 128,
-                "h": 128
+                "width": 128,
+                "height": 128
             },
             "rotated": true,
             "directions": [

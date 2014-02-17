@@ -11,38 +11,25 @@ var requestAnimFrame = (function(){
         };
 })();
 
-var map = [
-    [ 0, -2,  1,  2,  1,  2,  3, -2, -1, -1, -1, -1, 10],
-    [-2, -2, -2, -2, -2, -2, -2, -2, -1, -1, -1, -1,  6],
-    [-2, -2, -2, -2, -2, -2, -2, -2, -1, -1, -1, -1,  6],
-    [10, -1, -1, -1, -1, -1, -1,  7, -1, -1, -1, -1,  6],
-    [10, -1, -1, -1, -1, -1, -1,  7, -1, -1, -1, -1, 10],
-    [ 6, -1, -1, -1, -1, -1, -1,  5,  1,  1,  1,  1,  4],
-    [10, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2],
-    [ 6, -1, -1, -1, -1, -1, -1, -2, -2, -2, -2, -2, -2],
-    [10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [10, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [ 6, -1, -1, -1, -1, -1, -1,  9, 13, 13, 14, 14,  8],
-    [ 6, -1, -1, -1, -1, -1, -1,  7, -1, -1, -1, -1, 10],
-    [12, -1, -1, -1, -1, -1, 15, -2, -1, -1, -1, -1, 10],
-    [-2, -2, 14, 13, 14, 14, -2, -2, -1, -1, -1, -1,  6]
-];
-
 // Create the canvas
 var canvas = null,
     ctx = null,
     debugMode = false,
     lastTime,
+    lastFire = new Date(),
     gameTime = 0,
     fps = 0,
     playerSpeed = 200,
+    bulletSpeed = 500,
     tile_size = [40, 40],
+    map = [],
     map_size = [0, 0],
     heroSpriteName = "hero_0";
 
 // Game state
 var player = {},
-    balls = [];
+    bullets = [],
+    explosions = [];
 
 function main() {
     var now = Date.now();
@@ -129,13 +116,24 @@ function handleInput(dt) {
         player.pos[0] += playerSpeed * dt;
     }
 
-    if (input.isDown('SPACE')) {
-        var ball =  {
-            pos: [player.pos[0], player.pos[1]],
-            sprite: new Sprite(resources.getSpritesheet(heroSpriteName).url, resources.getSpritesheet(heroSpriteName).properties)
-        };
+    if (input.isDown('SPACE') && (Date.now() - lastFire > 100)) {
+        var x = player.pos[0] + player.sprite.frame.width / 2;
+        var y = player.pos[1] + player.sprite.frame.height / 2;
 
-        balls.push(ball);
+        bullets.push({ pos: [x, y],
+            dir: 'up',
+            sprite: new Sprite(resources.getSpritesheet('31').url, resources.getSpritesheet('31').properties) });
+        bullets.push({ pos: [x, y],
+            dir: 'down',
+            sprite: new Sprite(resources.getSpritesheet('32').url, resources.getSpritesheet('32').properties) });
+        bullets.push({ pos: [x, y],
+            dir: 'left',
+            sprite: new Sprite(resources.getSpritesheet('33').url, resources.getSpritesheet('33').properties) });
+        bullets.push({ pos: [x, y],
+            dir: 'right',
+            sprite: new Sprite(resources.getSpritesheet('34').url, resources.getSpritesheet('34').properties) });
+
+        lastFire = Date.now();
     }
 
     if (isImpassable(player.pos)) {
@@ -158,12 +156,42 @@ function isImpassable(pos) {
 }
 
 function updateEntities(dt) {
-    // Update the player sprite animation
-    for (var k in balls) {
-        balls[k].sprite.update(dt);
+    player.sprite.update(dt);
+
+    // Update all the bullets
+    for(var i = 0; i<bullets.length; i++) {
+        var bullet = bullets[i];
+        var pos = bullet.pos;
+
+        switch (bullet.dir) {
+            case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
+            case 'down': bullet.pos[1] += bulletSpeed * dt; break;
+            case 'left': bullet.pos[0] -= bulletSpeed * dt; break;
+            case 'right': bullet.pos[0] += bulletSpeed * dt; break;
+        }
+
+        // Remove the bullet if it goes offscreen
+        if(isImpassable(bullet.pos)) {
+            explosions.push({
+                pos: pos,
+                sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
+            });
+
+            bullets.splice(i, 1);
+            i--;
+        }
     }
 
-    player.sprite.update(dt);
+    // Update all the explosions
+    for(var i=0; i<explosions.length; i++) {
+        explosions[i].sprite.update(dt);
+
+        // Remove if animation is done
+        if(explosions[i].sprite.done) {
+            explosions.splice(i, 1);
+            i--;
+        }
+    }
 }
 
 // Draw everything
@@ -174,8 +202,12 @@ function render() {
         terrain.renderMapLayout(ctx, map[k], tile_size);
     }
 
-    for (var k in balls) {
-        renderEntity(balls[k]);
+    for (var k in bullets) {
+        renderEntity(bullets[k]);
+    }
+
+    for (var k in explosions) {
+        renderEntity(explosions[k]);
     }
 
     renderEntity(player);
