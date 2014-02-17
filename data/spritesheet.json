@@ -1,6 +1,6 @@
 {
     "images": {
-        "/sprites/zeldasprites.png": {
+        "sprites/zeldasprites.png": {
             "hero_0": {
                 "frame": {
                     "x": 0,
@@ -26,7 +26,7 @@
                 "frames": [0, 1, 2, 1]
             }
         },
-        "/sprites/wall.png": {
+        "sprites/wall.png": {
             "1": {
                 "frame": {
                     "x": 0,
@@ -188,7 +188,7 @@
                 "animated": false
             }
         },
-        "/sprites/floor.png": {
+        "sprites/floor.png": {
             "17": {
                 "frame": {
                     "x": 40,
@@ -250,7 +250,7 @@
                 "animated": false
             }
         },
-        "/sprites/things.png": {
+        "sprites/things.png": {
             "23": {
                 "frame": {
                     "x": 40,
@@ -322,7 +322,7 @@
                 "animated": false
             }
         },
-        "/sprites/fires.png": {
+        "sprites/fires.png": {
             "30": {
                 "frame": {
                     "x": 10,
