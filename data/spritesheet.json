@@ -1,0 +1,339 @@
+{
+    "images": {
+        "/sprites/zeldasprites.png": {
+            "hero_0": {
+                "frame": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 32,
+                    "height": 32
+                },
+                "rotated": true,
+                "directions": ["down", "left", "right", "up"],
+                "animated": true,
+                "frames": [0, 1, 2, 1]
+            },
+            "hero_1": {
+                "frame": {
+                    "x": 96,
+                    "y": 0,
+                    "width": 32,
+                    "height": 32
+                },
+                "rotated": true,
+                "directions": ["down", "left", "right", "up"],
+                "animated": true,
+                "frames": [0, 1, 2, 1]
+            }
+        },
+        "/sprites/wall.png": {
+            "1": {
+                "frame": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 80,
+                    "height": 125
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "2": {
+                "frame": {
+                    "x": 120,
+                    "y": 0,
+                    "width": 40,
+                    "height": 120
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "3": {
+                "frame": {
+                    "x": 200,
+                    "y": 0,
+                    "width": 40,
+                    "height": 120
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "4": {
+                "frame": {
+                    "x": 280,
+                    "y": 0,
+                    "width": 80,
+                    "height": 120
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "5": {
+                "frame": {
+                    "x": 400,
+                    "y": 0,
+                    "width": 40,
+                    "height": 125
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "6": {
+                "frame": {
+                    "x": 520,
+                    "y": 0,
+                    "width": 40,
+                    "height": 125
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "7": {
+                "frame": {
+                    "x": 0,
+                    "y": 160,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "8": {
+                "frame": {
+                    "x": 320,
+                    "y": 160,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "9": {
+                "frame": {
+                    "x": 400,
+                    "y": 200,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "10": {
+                "frame": {
+                    "x": 520,
+                    "y": 200,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "11": {
+                "frame": {
+                    "x": 0,
+                    "y": 240,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "12": {
+                "frame": {
+                    "x": 320,
+                    "y": 240,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "13": {
+                "frame": {
+                    "x": 0,
+                    "y": 320,
+                    "width": 80,
+                    "height": 80
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "14": {
+                "frame": {
+                    "x": 120,
+                    "y": 360,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "15": {
+                "frame": {
+                    "x": 200,
+                    "y": 360,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "16": {
+                "frame": {
+                    "x": 280,
+                    "y": 320,
+                    "width": 80,
+                    "height": 80
+                },
+                "rotated": false,
+                "animated": false
+            }
+        },
+        "/sprites/floor.png": {
+            "17": {
+                "frame": {
+                    "x": 40,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "18": {
+                "frame": {
+                    "x": 120,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "19": {
+                "frame": {
+                    "x": 200,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "20": {
+                "frame": {
+                    "x": 360,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "21": {
+                "frame": {
+                    "x": 440,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "22": {
+                "frame": {
+                    "x": 280,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            }
+        },
+        "/sprites/things.png": {
+            "23": {
+                "frame": {
+                    "x": 40,
+                    "y": 40,
+                    "width": 120,
+                    "height": 60
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "24": {
+                "frame": {
+                    "x": 200,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "25": {
+                "frame": {
+                    "x": 280,
+                    "y": 40,
+                    "width": 40,
+                    "height": 60
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "26": {
+                "frame": {
+                    "x": 320,
+                    "y": 40,
+                    "width": 40,
+                    "height": 60
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "27": {
+                "frame": {
+                    "x": 360,
+                    "y": 40,
+                    "width": 80,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "28": {
+                "frame": {
+                    "x": 470,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            },
+            "29": {
+                "frame": {
+                    "x": 510,
+                    "y": 40,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": false
+            }
+        },
+        "/sprites/fires.png": {
+            "30": {
+                "frame": {
+                    "x": 10,
+                    "y": 0,
+                    "width": 40,
+                    "height": 40
+                },
+                "rotated": false,
+                "animated": true,
+                "frames": [0, 1, 2, 3, 4, 5, 6]
+            }
+        }
+    }
+}

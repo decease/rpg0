@@ -1,0 +1,35 @@
+canvas {
+    background: #000;
+}
+
+.sprites {
+    position: fixed;
+    right: 0;
+    top: 0;
+    width: 20%;
+    height: auto;
+
+    padding: 20px;
+    border: 1px solid gainsboro;
+    background-color: #cccccc;
+}
+
+.sprites label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#tiles {
+    width: 100%;
+    height: auto;
+    overflow-y: auto;
+}
+
+#tiles > div {
+    float: left;
+    border: 1px solid green;
+}
+
+#tiles > div.selected {
+    border: 1px dashed dodgerblue;
+}
