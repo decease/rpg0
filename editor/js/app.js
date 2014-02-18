@@ -95,7 +95,7 @@ function initSettingDialog() {
 
         var img = document.createElement("div");
         img.setAttribute("style",
-            "background: url(../" + spritesheet.url + ") no-repeat -" + spritesheet.properties.frame.x + "px -" + spritesheet.properties.frame.y + "px; "
+            "background: url(" + spritesheet.url + ") no-repeat -" + spritesheet.properties.frame.x + "px -" + spritesheet.properties.frame.y + "px; "
             + "width: " + spritesheet.properties.frame.width + "px; " + "height: " + spritesheet.properties.frame.height + "px");
         img.setAttribute("data-id", k);
         img.onclick = function () {
