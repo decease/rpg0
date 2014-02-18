@@ -6,20 +6,22 @@
     /**
      *
      * @param jsonUrl = "data/spritesheet.json"
+     * @param prefix = "../" (optional)
      */
-    function load(jsonUrl) {
+    function load(jsonUrl, prefix) {
+        prefix = prefix || '';
         $.getJSON(jsonUrl, function (data) {
             var images = data.images;
 
             for (var key in images) {
                 var image = images[key];
 
-                _loadImage(key);
+                _loadImage(prefix + key);
 
                 for (var sprite in image) {
                     spriteesheets[sprite] = {
                         properties: image[sprite],
-                        url: key
+                        url: prefix + key
                     };
                 }
             }

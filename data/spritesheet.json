@@ -322,11 +322,7 @@
                 "animated": false
             }
         },
-<<<<<<< HEAD
-        "sprites/fires.png": {
-=======
-        "/sprites/fight.png": {
->>>>>>> origin/master
+        "sprites/fight.png": {
             "30": {
                 "frame": {
                     "x": 0,
