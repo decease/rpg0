@@ -1,5 +1,11 @@
 (function() {
-    var pressedKeys = {};
+    var pressedKeys = {},
+        mouse = {
+            isDown: false,
+            btn: 0,
+            pos: [0, 0],
+            oldPos: [0, 0]
+        };
 
     function setKey(event, status) {
         var code = event.keyCode;
@@ -24,6 +30,30 @@
         pressedKeys[key] = status;
     }
 
+    function AddMouseListenersFor(el) {
+        el.onmousedown = function (e) {
+            mouse.isDown = true;
+            mouse.btn = e.button;
+            mouse.oldPos = mouse.pos;
+            mouse.pos = [e.clientX, e.clientY];
+
+            return false;
+        };
+
+        el.onmouseup = function (e) {
+            mouse.isDown = false;
+
+            return false;
+        };
+
+        el.onmousemove = function (e) {
+            mouse.oldPos = mouse.pos;
+            mouse.pos = [e.clientX, e.clientY]
+        };
+
+        el.oncontextmenu = function () { return false; };
+    }
+
     document.addEventListener('keydown', function(e) {
         setKey(e, true);
     });
@@ -37,6 +67,8 @@
     });
 
     window.input = {
+        mouse: mouse,
+        AddMouseListenersFor: AddMouseListenersFor,
         isDown: function(key) {
             return pressedKeys[key.toUpperCase()];
         }
