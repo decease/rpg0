@@ -25,6 +25,7 @@ var canvas = null,
     bulletSpeed = 500,
     tile_size = [40, 40],
     map_size = [80, 30],
+    map_pos = [0, 0],
     map = [],
 
     directions = ["up", "down", "left", "right"],
@@ -150,24 +151,40 @@ function handleInput(dt) {
         player.sprite.animated = true;
         player.sprite.direction = 'down';
         player.pos[1] += playerSpeed * dt;
+
+        if (player.pos[1] - map_pos[1] > canvas.height - 150) {
+            map_pos[1] += playerSpeed * dt;
+        }
     }
 
     if(input.isDown('UP') || input.isDown('w')) {
         player.sprite.animated = true;
         player.sprite.direction = 'up';
         player.pos[1] -= playerSpeed * dt;
+
+        if (player.pos[1] - map_pos[1] < 150) {
+            map_pos[1] -= playerSpeed * dt;
+        }
     }
 
     if(input.isDown('LEFT') || input.isDown('a')) {
         player.sprite.direction = 'left';
         player.sprite.animated = true;
         player.pos[0] -= playerSpeed * dt;
+
+        if (player.pos[0] - map_pos[0] < 150) {
+            map_pos[0] -= playerSpeed * dt;
+        }
     }
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
         player.sprite.direction = 'right';
         player.sprite.animated = true;
         player.pos[0] += playerSpeed * dt;
+
+        if (player.pos[0] - map_pos[0] > canvas.width - 150) {
+            map_pos[0] += playerSpeed * dt;
+        }
     }
 
     if (input.isDown('SPACE') && (Date.now() - lastFire > 100)) {
@@ -183,8 +200,8 @@ function handleInput(dt) {
     }
 
     if (input.mouse.isDown && (Date.now() - lastAdd > 100)) {
-        var x = input.mouse.pos[0];
-        var y = input.mouse.pos[1];
+        var x = input.mouse.pos[0] + map_pos[0];
+        var y = input.mouse.pos[1] + map_pos[1];
 
         switch (input.mouse.btn) {
             case 0:
@@ -283,7 +300,7 @@ function render() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     for (var k in map) {
-        terrain.renderMapLayout(ctx, map[k], tile_size);
+        terrain.renderMapLayout(ctx, map[k], tile_size, map_pos);
     }
 
     for (var k in bullets) {
@@ -353,7 +370,7 @@ function printInformation() {
 
 function renderEntity(entity) {
     ctx.save();
-    ctx.translate(entity.pos[0], entity.pos[1]);
+    ctx.translate(entity.pos[0] - map_pos[0], entity.pos[1] - map_pos[1]);
     entity.sprite.render(ctx);
     ctx.restore();
 }
