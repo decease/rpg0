@@ -16,7 +16,7 @@ var canvas = null,
     ctx = null,
     lastTime,
     fps = 0,
-    map_size = [40, 18],
+    map_size = [80, 30],
     tile_size = [40, 40],
     map = [],
     selectedLayer = 0,
@@ -54,7 +54,7 @@ function init() {
         mouse.isDown = true;
         mouse.btn = e.button;
         mouse.oldPos = mouse.pos;
-        mouse.pos = [e.clientX, e.clientY];
+        mouse.pos = [e.offsetX, e.offsetY];
 
         return false;
     };
@@ -65,7 +65,7 @@ function init() {
     };
     canvas.onmousemove = function (e) {
         mouse.oldPos = mouse.pos;
-        mouse.pos = [e.clientX, e.clientY]
+        mouse.pos = [e.offsetX, e.offsetY]
     };
 
     canvas.oncontextmenu = function () { return false; };
@@ -220,7 +220,6 @@ function isImpassable(pos) {
 function renderUnavailible() {
     for (var i = 0; i < map_size[0]; i ++) {
         for (var j = 0; j < map_size[1]; j++) {
-            //console.log(isImpassable([i, j]));
             if (isImpassable([i * tile_size[0] + 2, j * tile_size[1] + 2])) {
                 ctx.fillStyle = "rgba(255,0,0,0.3)";
                 ctx.fillRect(i * tile_size[0], j * tile_size[1], tile_size[0], tile_size[1]);

@@ -21,10 +21,11 @@ var canvas = null,
     gameTime = 0,
     fps = 0,
     playerSpeed = 200,
+    enemySpeed = 100,
     bulletSpeed = 500,
     tile_size = [40, 40],
+    map_size = [80, 30],
     map = [],
-    map_size = [0, 0],
 
     directions = ["up", "down", "left", "right"],
     fireSprites = {up: 31, down: 32, left: 33, right: 34},
@@ -35,7 +36,8 @@ var canvas = null,
 var player = {},
     bullets = [],
     explosions = [],
-    enemies = [];
+    enemies = [],
+    score = 0;
 
 function main() {
     var now = Date.now();
@@ -96,6 +98,49 @@ function update(dt) {
     handleInput(dt);
     updateEntities(dt);
 
+    checkCollisions();
+}
+
+function checkCollisions() {
+    for(var j = 0; j < bullets.length; j++) {
+        var pos2 = bullets[j].pos;
+        var size2 = [bullets[j].sprite.frame.width, bullets[j].sprite.frame.height];
+
+        for(var i = 0; i < enemies.length; i++) {
+            var pos = enemies[i].pos;
+            var size = [enemies[i].sprite.frame.width, enemies[i].sprite.frame.height];
+
+            if(help2d.boxCollides(pos, size, pos2, size2)) {
+                // Remove the enemy
+                enemies.splice(i, 1);
+                i--;
+
+                // Add score
+                score += 100;
+
+                // Add an explosion
+                explosions.push({
+                    pos: pos,
+                    sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
+                });
+
+                // Remove the bullet and stop this iteration
+                bullets.splice(j, 1);
+                break;
+            }
+
+            if (isImpassable(pos2)) {
+                explosions.push({
+                    pos: pos2,
+                    sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
+                });
+
+                // Remove the bullet and stop this iteration
+                bullets.splice(j, 1);
+                break;
+            }
+        }
+    }
 }
 
 function handleInput(dt) {
@@ -146,7 +191,7 @@ function handleInput(dt) {
                 enemies.push({
                         pos: [x, y],
                         dir: player.sprite.direction,
-                        sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 13)
+                        sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 7)
                     });
                 break;
         }
@@ -181,24 +226,12 @@ function updateEntities(dt) {
     // Update all the bullets
     for(i = 0; i<bullets.length; i++) {
         var bullet = bullets[i];
-        var pos = bullet.pos;
 
         switch (bullet.dir) {
             case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
             case 'down': bullet.pos[1] += bulletSpeed * dt; break;
             case 'left': bullet.pos[0] -= bulletSpeed * dt; break;
             case 'right': bullet.pos[0] += bulletSpeed * dt; break;
-        }
-
-        // Remove the bullet if it goes offscreen
-        if(isImpassable(bullet.pos)) {
-            explosions.push({
-                pos: pos,
-                sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
-            });
-
-            bullets.splice(i, 1);
-            i--;
         }
     }
 
@@ -223,16 +256,16 @@ function updateEntities(dt) {
         switch (enemy.sprite.direction)
         {
             case "up":
-                enemy.pos[1] -= playerSpeed * dt;
+                enemy.pos[1] -= enemySpeed * dt;
                 break;
             case "down":
-                enemy.pos[1] += playerSpeed * dt;
+                enemy.pos[1] += enemySpeed * dt;
                 break;
             case "right":
-                enemy.pos[0] += playerSpeed * dt;
+                enemy.pos[0] += enemySpeed * dt;
                 break;
             case "left":
-                enemy.pos[0] -= playerSpeed * dt;
+                enemy.pos[0] -= enemySpeed * dt;
                 break;
         }
 
@@ -271,14 +304,13 @@ function render() {
     if (debugMode) {
         renderUnavailible();
         renderCells();
-        printInformation();
     }
+    printInformation();
 }
 
 function renderUnavailible() {
     for (var i = 0; i < map_size[0]; i ++) {
         for (var j = 0; j < map_size[1]; j++) {
-            //console.log(isImpassable([i, j]));
             if (isImpassable([i * tile_size[0] + 2, j * tile_size[1] + 2])) {
                 ctx.fillStyle = "rgba(255,0,0,0.3)";
                 ctx.fillRect(i * tile_size[0], j * tile_size[1], tile_size[0], tile_size[1]);
@@ -310,9 +342,13 @@ function printInformation() {
     var x = Math.ceil(player.pos[0] / 40) - 1;
     var y = Math.ceil(player.pos[1] / 40) - 1;
 
-    ctx.fillText("Player cell: " + x + ', ' + y, 50, 50);
-    ctx.fillText("Player position: " + player.pos[0] + ', ' + player.pos[1], 50, 70);
-    ctx.fillText("FPS: " + Math.ceil(fps), 50, 90);
+    ctx.fillText("Scores: " + Math.ceil(score), 50, 50);
+
+    if (debugMode) {
+        ctx.fillText("Player cell: " + x + ', ' + y, 50, 70);
+        ctx.fillText("Player position: " + player.pos[0] + ', ' + player.pos[1], 50, 90);
+        ctx.fillText("FPS: " + Math.ceil(fps), 50, 110);
+    }
 }
 
 function renderEntity(entity) {
