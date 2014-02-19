@@ -21,8 +21,9 @@ var canvas = null,
     gameTime = 0,
     fps = 0,
     playerSpeed = 200,
-    enemySpeed = 100,
+    enemySpeed = 70,
     bulletSpeed = 500,
+    attackDistance = 100,
     tile_size = [40, 40],
     map_size = [80, 30],
     map_pos = [0, 0],
@@ -103,42 +104,55 @@ function update(dt) {
 }
 
 function checkCollisions() {
+    var pos, size;
+
     for(var j = 0; j < bullets.length; j++) {
         var pos2 = bullets[j].pos;
         var size2 = [bullets[j].sprite.frame.width, bullets[j].sprite.frame.height];
 
-        for(var i = 0; i < enemies.length; i++) {
-            var pos = enemies[i].pos;
-            var size = [enemies[i].sprite.frame.width, enemies[i].sprite.frame.height];
+        if (bullets[j].source == 'player') {
+            for(var i = 0; i < enemies.length; i++) {
+                pos = enemies[i].pos;
+                size = [enemies[i].sprite.frame.width, enemies[i].sprite.frame.height];
 
-            if(help2d.boxCollides(pos, size, pos2, size2)) {
-                // Remove the enemy
-                enemies.splice(i, 1);
-                i--;
+                if (help2d.boxCollides(pos, size, pos2, size2)) {
+                    // Remove the enemy
+                    enemies.splice(i, 1);
+                    i--;
 
-                // Add score
-                score += 100;
+                    // Add score
+                    score += 100;
 
-                // Add an explosion
-                explosions.push({
-                    pos: pos,
-                    sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
-                });
+                    // Add an explosion
+                    explosions.push({
+                        pos: pos,
+                        sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
+                    });
 
-                // Remove the bullet and stop this iteration
-                bullets.splice(j, 1);
-                break;
+                    // Remove the bullet and stop this iteration
+                    bullets.splice(j, 1);
+                    j--;
+                    break;
+                }
+
+                if (isImpassable(pos2)) {
+                    explosions.push({
+                        pos: pos2,
+                        sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
+                    });
+
+                    // Remove the bullet and stop this iteration
+                    bullets.splice(j, 1);
+                    j--;
+                    break;
+                }
             }
+        } else {
+            pos = player.pos;
+            size = [player.sprite.frame.width, player.sprite.frame.height];
 
-            if (isImpassable(pos2)) {
-                explosions.push({
-                    pos: pos2,
-                    sprite: new Sprite(resources.getSpritesheet('30').url, resources.getSpritesheet('30').properties, '', 15, true)
-                });
-
-                // Remove the bullet and stop this iteration
-                bullets.splice(j, 1);
-                break;
+            if (help2d.boxCollides(pos, size, pos2, size2)) {
+                alert('Game over :(');
             }
         }
     }
@@ -192,7 +206,9 @@ function handleInput(dt) {
         var y = player.pos[1] + player.sprite.frame.height / 2;
 
         var spriteName =  fireSprites[player.sprite.direction];
-        bullets.push({ pos: [x, y],
+        bullets.push({
+            source: 'player',
+            pos: [x, y],
             dir: player.sprite.direction,
             sprite: new Sprite(resources.getSpritesheet(spriteName).url, resources.getSpritesheet(spriteName).properties) });
 
@@ -208,6 +224,7 @@ function handleInput(dt) {
                 enemies.push({
                         pos: [x, y],
                         dir: player.sprite.direction,
+                        lastFire: new Date(),
                         sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 7)
                     });
                 break;
@@ -241,7 +258,7 @@ function updateEntities(dt) {
     player.sprite.update(dt);
 
     // Update all the bullets
-    for(i = 0; i<bullets.length; i++) {
+    for(i = 0; i < bullets.length; i++) {
         var bullet = bullets[i];
 
         switch (bullet.dir) {
@@ -267,28 +284,49 @@ function updateEntities(dt) {
         var enemy = enemies[i];
         var oldPos = [enemy.pos[0], enemy.pos[1]];
 
-        if(Math.random() < 1 - .993) {
-            enemy.sprite.direction = directions[Math.floor(Math.random() * 4)];
-        }
-        switch (enemy.sprite.direction)
-        {
-            case "up":
-                enemy.pos[1] -= enemySpeed * dt;
-                break;
-            case "down":
-                enemy.pos[1] += enemySpeed * dt;
-                break;
-            case "right":
-                enemy.pos[0] += enemySpeed * dt;
-                break;
-            case "left":
-                enemy.pos[0] -= enemySpeed * dt;
-                break;
-        }
+        var diffX = player.pos[0] - enemy.pos[0];
+        var diffY = player.pos[1] - enemy.pos[1];
+        var distance = Math.sqrt(diffX*diffX + diffY*diffY);
 
-        if(isImpassable(enemy.pos)) {
-            enemy.pos = oldPos;
-            enemy.sprite.direction = directions[Math.floor(Math.random() * 4)];
+        if (distance < attackDistance && (Date.now() - enemy.lastFire > 100)) {
+            // Attack
+
+            var x = enemy.pos[0] + enemy.sprite.frame.width / 2;
+            var y = enemy.pos[1] + enemy.sprite.frame.height / 2;
+
+            var spriteName =  fireSprites[enemy.sprite.direction];
+            bullets.push({
+                source: 'enemy',
+                pos: [x, y],
+                dir: enemy.sprite.direction,
+                sprite: new Sprite(resources.getSpritesheet(spriteName).url, resources.getSpritesheet(spriteName).properties) });
+
+            enemy.lastFire = Date.now();
+        } else {
+            // Move to player
+
+            if (Math.abs(diffX) > Math.abs(diffY)) {
+                if (diffX <= 0) {
+                    enemy.sprite.direction = 'left';
+                    enemy.pos[0] -= enemySpeed * dt;
+                } else {
+                    enemy.sprite.direction = 'right';
+                    enemy.pos[0] += enemySpeed * dt;
+                }
+            } else {
+                if (diffY <= 0) {
+                    enemy.sprite.direction = 'up';
+                    enemy.pos[1] -= enemySpeed * dt;
+                } else {
+                    enemy.sprite.direction = 'down';
+                    enemy.pos[1] += enemySpeed * dt;
+                }
+            }
+
+            if(isImpassable(enemy.pos)) {
+                enemy.pos = oldPos;
+                enemy.sprite.direction = directions[Math.floor(Math.random() * 4)];
+            }
         }
 
         enemy.sprite.update(dt);
