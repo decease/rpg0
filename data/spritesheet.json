@@ -374,6 +374,19 @@
                 "rotated": false,
                 "animated": false
             }
+        },
+        "sprites/hero.png": {
+            "35": {
+                "frame": {
+                    "x": 0,
+                    "y": 0,
+                    "width": 64,
+                    "height": 32
+                },
+                "rotated": false,
+                "animated": true,
+                "frames": [0, 1, 2, 3, 2, 1]
+            }
         }
     }
 }

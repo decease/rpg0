@@ -66,7 +66,7 @@
             ctx.drawImage(resources.get(this.url),
                 x, y,
                 this.frame.width, this.frame.height,
-                0, 0,
+                -this.frame.width/2, -this.frame.height/2,
                 this.frame.width, this.frame.height);
         }
     };

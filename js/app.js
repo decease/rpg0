@@ -31,7 +31,7 @@ var canvas = null,
 
     directions = ["up", "down", "left", "right"],
     fireSprites = {up: 31, down: 32, left: 33, right: 34},
-    heroSpriteName = "hero_0",
+    heroSpriteName = "35",
     enemySpriteName = "hero_1";
 
 // Game state
@@ -97,6 +97,25 @@ $(function () {
 function update(dt) {
     gameTime += dt;
 
+    if( Math.random() < 1 - Math.pow(.993, gameTime)) {
+        var x = Math.ceil(Math.random() * canvas.width);
+        var y = Math.ceil(Math.random() * canvas.height);
+
+
+        var diffX = player.pos[0] - x;
+        var diffY = player.pos[1] - y;
+        var distance = Math.sqrt(diffX*diffX + diffY*diffY);
+
+        if (!isImpassable([x,y]) && distance > 5 * attackDistance) {
+            enemies.push({
+                pos: [x, y],
+                dir: player.sprite.direction,
+                lastFire: new Date(),
+                sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 7)
+            });
+        }
+    }
+
     handleInput(dt);
     updateEntities(dt);
 
@@ -159,79 +178,93 @@ function checkCollisions() {
 }
 
 function handleInput(dt) {
-    var oldPos = [player.pos[0], player.pos[1]];
+    var oldPos = [player.pos[0], player.pos[1]],
+        dx, dy, x, y, spritesheet;
 
     if(input.isDown('DOWN') || input.isDown('s')) {
         player.sprite.animated = true;
-        player.sprite.direction = 'down';
-        player.pos[1] += playerSpeed * dt;
+        dx = playerSpeed * Math.sin(player.angle * (Math.PI / 180));
+        dy = playerSpeed * Math.cos(player.angle * (Math.PI / 180));
 
-        if (player.pos[1] - map_pos[1] > canvas.height - 150) {
-            map_pos[1] += playerSpeed * dt;
-        }
+        player.pos[0] -= dx * dt;
+        player.pos[1] += dy * dt;
     }
 
     if(input.isDown('UP') || input.isDown('w')) {
         player.sprite.animated = true;
-        player.sprite.direction = 'up';
-        player.pos[1] -= playerSpeed * dt;
+        dx = playerSpeed * Math.sin(player.angle * (Math.PI / 180));
+        dy = playerSpeed * Math.cos(player.angle * (Math.PI / 180));
 
-        if (player.pos[1] - map_pos[1] < 150) {
-            map_pos[1] -= playerSpeed * dt;
-        }
+        player.pos[0] += dx * dt;
+        player.pos[1] -= dy * dt;
     }
 
     if(input.isDown('LEFT') || input.isDown('a')) {
-        player.sprite.direction = 'left';
         player.sprite.animated = true;
-        player.pos[0] -= playerSpeed * dt;
+        dx = playerSpeed * Math.sin((player.angle-90) * (Math.PI / 180));
+        dy = playerSpeed * Math.cos((player.angle-90) * (Math.PI / 180));
 
-        if (player.pos[0] - map_pos[0] < 150) {
-            map_pos[0] -= playerSpeed * dt;
-        }
+        player.pos[0] += dx * dt;
+        player.pos[1] -= dy * dt;
     }
 
     if(input.isDown('RIGHT') || input.isDown('d')) {
-        player.sprite.direction = 'right';
         player.sprite.animated = true;
-        player.pos[0] += playerSpeed * dt;
+        dx = playerSpeed * Math.sin((player.angle-90) * (Math.PI / 180));
+        dy = playerSpeed * Math.cos((player.angle-90) * (Math.PI / 180));
 
-        if (player.pos[0] - map_pos[0] > canvas.width - 150) {
-            map_pos[0] += playerSpeed * dt;
-        }
+        player.pos[0] -= dx * dt;
+        player.pos[1] += dy * dt;
     }
 
-    if (input.isDown('SPACE') && (Date.now() - lastFire > 100)) {
-        var x = player.pos[0] + player.sprite.frame.width / 2;
-        var y = player.pos[1] + player.sprite.frame.height / 2;
-
-        var spriteName =  fireSprites[player.sprite.direction];
-        bullets.push({
-            source: 'player',
-            pos: [x, y],
-            dir: player.sprite.direction,
-            sprite: new Sprite(resources.getSpritesheet(spriteName).url, resources.getSpritesheet(spriteName).properties) });
-
-        lastFire = Date.now();
+    if (player.pos[1] - map_pos[1] < 150) {
+        map_pos[1] -= playerSpeed * dt;
+    }
+    if (player.pos[1] - map_pos[1] > canvas.height - 150) {
+        map_pos[1] += playerSpeed * dt;
+    }
+    if (player.pos[0] - map_pos[0] < 150) {
+        map_pos[0] -= playerSpeed * dt;
+    }
+    if (player.pos[0] - map_pos[0] > canvas.width - 150) {
+        map_pos[0] += playerSpeed * dt;
     }
 
     if (input.mouse.isDown && (Date.now() - lastAdd > 100)) {
-        var x = input.mouse.pos[0] + map_pos[0];
-        var y = input.mouse.pos[1] + map_pos[1];
+        x = input.mouse.pos[0] + map_pos[0];
+        y = input.mouse.pos[1] + map_pos[1];
 
         switch (input.mouse.btn) {
             case 0:
+                x = player.pos[0] + player.sprite.frame.width / 2;
+                y = player.pos[1] + player.sprite.frame.height / 2;
+                spritesheet = resources.getSpritesheet('31');
+
+                x += 24 * Math.sin((player.angle + 90) * (Math.PI / 180));
+                y -= 24 * Math.cos((player.angle + 90) * (Math.PI / 180));
+
+                bullets.push({
+                    source: 'player',
+                    pos: [x, y],
+                    angle: getAngular(),
+                    sprite: new Sprite(spritesheet.url, spritesheet.properties) });
+
+                lastFire = Date.now();
+                break;
+            case 2:
                 enemies.push({
-                        pos: [x, y],
-                        dir: player.sprite.direction,
-                        lastFire: new Date(),
-                        sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 7)
-                    });
+                    pos: [x, y],
+                    dir: player.sprite.direction,
+                    lastFire: new Date(),
+                    sprite: new Sprite(resources.getSpritesheet(enemySpriteName).url, resources.getSpritesheet(enemySpriteName).properties, player.sprite.direction, 7)
+                });
                 break;
         }
 
         lastAdd = Date.now();
     }
+
+    player.angle = getAngular();
 
     if (isImpassable(player.pos)) {
         player.pos = oldPos;
@@ -252,21 +285,33 @@ function isImpassable(pos) {
     return flag;
 }
 
+function getAngular() {
+    var x = input.mouse.pos[0], y = input.mouse.pos[1];
+    var dx = x - player.pos[0]  - map_pos[0], dy = y - player.pos[1]  - map_pos[1];
+    var an = 0;
+    if (dx == 0) {
+        an = (y > 0) ? 180 : 0;
+    } else {
+        an = Math.atan(dy/dx) * 180 / Math.PI;
+        an = (dx > 0) ? an + 90 : an + 270;
+    }
+
+    return an;
+}
+
 function updateEntities(dt) {
-    var i = 0;
+    var i = 0, dx, dy;
 
     player.sprite.update(dt);
 
     // Update all the bullets
-    for(i = 0; i < bullets.length; i++) {
+    for (i = 0; i < bullets.length; i++) {
         var bullet = bullets[i];
+        dx = bulletSpeed * Math.sin(bullet.angle * (Math.PI / 180));
+        dy = bulletSpeed * Math.cos(bullet.angle * (Math.PI / 180));
 
-        switch (bullet.dir) {
-            case 'up': bullet.pos[1] -= bulletSpeed * dt; break;
-            case 'down': bullet.pos[1] += bulletSpeed * dt; break;
-            case 'left': bullet.pos[0] -= bulletSpeed * dt; break;
-            case 'right': bullet.pos[0] += bulletSpeed * dt; break;
-        }
+        bullet.pos[0] += dx * dt;
+        bullet.pos[1] -= dy * dt;
     }
 
     // Update all the explosions
@@ -342,7 +387,7 @@ function render() {
     }
 
     for (var k in bullets) {
-        renderEntity(bullets[k]);
+        renderEntity(bullets[k], bullets[k].angle);
     }
 
     for (var k in enemies) {
@@ -353,7 +398,8 @@ function render() {
         renderEntity(explosions[k]);
     }
 
-    renderEntity(player);
+    renderEntity(player, player.angle);
+
     player.sprite.animated = false;
 
     if (debugMode) {
@@ -398,6 +444,7 @@ function printInformation() {
     var y = Math.ceil(player.pos[1] / 40) - 1;
 
     ctx.fillText("Scores: " + Math.ceil(score), 50, 50);
+    ctx.fillText("Angle: " + Math.ceil(player.angle), 50, 70);
 
     if (debugMode) {
         ctx.fillText("Player cell: " + x + ', ' + y, 50, 70);
@@ -406,9 +453,15 @@ function printInformation() {
     }
 }
 
-function renderEntity(entity) {
+function renderEntity(entity, angle) {
+    angle = angle || 0;
+
     ctx.save();
-    ctx.translate(entity.pos[0] - map_pos[0], entity.pos[1] - map_pos[1]);
+    ctx.translate(
+        entity.pos[0] - map_pos[0] + entity.sprite.frame.width / 2,
+        entity.pos[1] - map_pos[1] + entity.sprite.frame.height / 2
+    );
+    ctx.rotate(angle * (Math.PI / 180));
     entity.sprite.render(ctx);
     ctx.restore();
 }
